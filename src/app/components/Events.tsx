@@ -6,20 +6,20 @@ const events = [
   {
     title: "Wedding Ceremony",
     date: "21st June 2026",
-    time: "10:00 AM onwards",
-    venue: "Sri Venkateswara Kalyana Mandapam",
-    address: "Main Road, Guntur, Andhra Pradesh",
-    description: "Join us as we exchange our vows and begin our journey together. Traditional wedding ceremonies followed by lunch.",
+    time: "7:00 PM onwards",
+    venue: "Narsipatnam",
+    address: "Narsipatnam, Andhra Pradesh",
+    description: "Join us as we exchange our vows and begin our journey together. Traditional wedding ceremonies followed by dinner.",
     icon: "💒",
     color: "var(--primary)",
   },
   {
     title: "Reception",
-    date: "21st June 2026",
-    time: "7:00 PM onwards",
-    venue: "Grand Convention Hall",
-    address: "Hotel Bliss, Guntur, Andhra Pradesh",
-    description: "An evening of celebration, dinner, and dancing as we rejoice with our friends and family.",
+    date: "25th June 2026",
+    time: "12:00 PM onwards",
+    venue: "JVR CONVENTIONS",
+    address: "Ponduru, Andhra Pradesh",
+    description: "Join us for a celebratory lunch as we rejoice with our friends and family.",
     icon: "🎉",
     color: "var(--secondary)",
   },
@@ -97,7 +97,7 @@ export default function Events() {
                 </p>
 
                 <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(event.venue + ", " + event.address)}`}
+                  href={event.title === "Wedding Ceremony" ? "https://maps.app.goo.gl/bMsupsBgVbkttk5PA" : "https://maps.app.goo.gl/5uvu7344KxiWMfPcA"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full transition-all duration-300 hover:opacity-80 self-start"

@@ -4,17 +4,17 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 interface Wish {
-  id: number;
+  _id: string;
   name: string;
   message: string;
-  timestamp: Date;
+  timestamp: string;
 }
 
-function FormattedDate({ date }: { date: Date }) {
+function FormattedDate({ date }: { date: string }) {
   const [formatted, setFormatted] = useState("");
 
   useEffect(() => {
-    setFormatted(date.toLocaleDateString());
+    setFormatted(new Date(date).toLocaleDateString());
   }, [date]);
 
   if (!formatted) return <span className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-light)" }}>---</span>;
@@ -26,46 +26,40 @@ function FormattedDate({ date }: { date: Date }) {
   );
 }
 
-const initialWishes: Wish[] = [
-  {
-    id: 1,
-    name: "Arjun & Priya",
-    message: "Wishing you both a lifetime of love, laughter, and happiness together! 🎊",
-    timestamp: new Date("2026-05-01"),
-  },
-  {
-    id: 2,
-    name: "Sneha Reddy",
-    message: "So happy for you both! May your journey together be filled with endless joy and beautiful memories. ❤️",
-    timestamp: new Date("2026-05-03"),
-  },
-  {
-    id: 3,
-    name: "Vikram Kumar",
-    message: "Congratulations! Wishing the perfect couple a blissful married life ahead! 🎉",
-    timestamp: new Date("2026-05-05"),
-  },
-];
-
 export default function Wishes() {
-  const [wishes, setWishes] = useState<Wish[]>(initialWishes);
+  const [wishes, setWishes] = useState<Wish[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch("/api/wishes")
+      .then((res) => res.json())
+      .then((data) => setWishes(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
 
-    const newWish: Wish = {
-      id: Date.now(),
-      name: name.trim(),
-      message: message.trim(),
-      timestamp: new Date(),
-    };
+    try {
+      const res = await fetch("/api/wishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), message: message.trim() }),
+      });
 
-    setWishes([newWish, ...wishes]);
-    setName("");
-    setMessage("");
+      if (!res.ok) return;
+
+      const newWish = await res.json();
+      setWishes([newWish, ...wishes]);
+      setName("");
+      setMessage("");
+    } catch {
+      // silently fail
+    }
   };
 
   return (
@@ -156,24 +150,30 @@ export default function Wishes() {
             transition={{ duration: 0.6 }}
             className="space-y-4 max-h-[500px] overflow-y-auto pr-2"
           >
-            {wishes.map((wish, i) => (
-              <motion.div
-                key={wish.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="glass-card rounded-2xl p-5"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <span className="font-semibold text-sm">{wish.name}</span>
-                  <FormattedDate date={wish.timestamp} />
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-light)" }}>
-                  {wish.message}
-                </p>
-              </motion.div>
-            ))}
+            {loading ? (
+              <p className="text-sm" style={{ color: "var(--text-light)" }}>Loading wishes...</p>
+            ) : wishes.length === 0 ? (
+              <p className="text-sm" style={{ color: "var(--text-light)" }}>No wishes yet. Be the first!</p>
+            ) : (
+              wishes.map((wish, i) => (
+                <motion.div
+                  key={wish._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="glass-card rounded-2xl p-5"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="font-semibold text-sm">{wish.name}</span>
+                    <FormattedDate date={wish.timestamp} />
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--text-light)" }}>
+                    {wish.message}
+                  </p>
+                </motion.div>
+              ))
+            )}
           </motion.div>
         </div>
       </div>

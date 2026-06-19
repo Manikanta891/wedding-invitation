@@ -54,7 +54,7 @@ function Countdown({ targetDate }: { targetDate: Date }) {
 }
 
 export default function Hero() {
-  const weddingDate = new Date("2026-06-21T21:07:00");
+  const weddingDate = new Date("2026-06-21T19:00:00");
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-28">
@@ -125,7 +125,7 @@ export default function Hero() {
         >
           <div className="glass-card inline-flex items-center gap-3 px-6 py-3 rounded-full mb-8">
             <span className="text-lg">📅</span>
-            <span className="font-display text-lg">21<sup>st</sup> June, 2026 | 9:07 PM</span>
+            <span className="font-display text-lg">21<sup>st</sup> June, 2026 | 7:00 PM</span>
           </div>
         </motion.div>
 

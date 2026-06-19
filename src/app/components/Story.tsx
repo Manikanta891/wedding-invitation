@@ -4,19 +4,19 @@ import { motion } from "framer-motion";
 
 const storyEvents = [
   {
-    year: "2020",
+    year: "2017",
     title: "First Meeting",
     description: "Two souls, one unexpected moment. What started as a simple hello became the beginning of a beautiful journey together.",
     icon: "💫",
   },
   {
-    year: "2022",
+    year: "2018",
     title: "The Proposal",
     description: "Under the starlit sky, with a heart full of love and a knee on the ground, a question was asked that changed everything.",
     icon: "💍",
   },
   {
-    year: "2023",
+    year: "2021",
     title: "Family Blessings",
     description: "With the love and support of both families, our bond grew stronger, paving the way for a lifetime of togetherness.",
     icon: "🙏",
