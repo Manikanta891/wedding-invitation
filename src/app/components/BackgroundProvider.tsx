@@ -32,12 +32,15 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("wedding-bg");
-    if (saved) {
-      const found = backgrounds.find((b) => b.id === saved);
-      if (found) setCurrentBg(found);
-    }
+    const timer = setTimeout(() => {
+      setMounted(true);
+      const saved = localStorage.getItem("wedding-bg");
+      if (saved) {
+        const found = backgrounds.find((b) => b.id === saved);
+        if (found) setCurrentBg(found);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

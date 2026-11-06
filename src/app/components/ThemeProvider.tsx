@@ -32,12 +32,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("wedding-theme");
-    if (saved) {
-      const found = themes.find((t) => t.id === saved);
-      if (found) setCurrentTheme(found);
-    }
+    const timer = setTimeout(() => {
+      setMounted(true);
+      const saved = localStorage.getItem("wedding-theme");
+      if (saved) {
+        const found = themes.find((t) => t.id === saved);
+        if (found) setCurrentTheme(found);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

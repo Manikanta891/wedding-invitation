@@ -7,7 +7,7 @@ const storyEvents = [
     year: "2017",
     title: "First Meeting",
     description: "Two souls, one unexpected moment. What started as a simple hello became the beginning of a beautiful journey together.",
-    icon: "💫",
+    icon: "💌",
   },
   {
     year: "2018",

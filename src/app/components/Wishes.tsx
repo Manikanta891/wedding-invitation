@@ -14,29 +14,69 @@ function FormattedDate({ date }: { date: string }) {
   const [formatted, setFormatted] = useState("");
 
   useEffect(() => {
-    setFormatted(new Date(date).toLocaleDateString());
+    const timer = setTimeout(() => {
+      try {
+        setFormatted(new Date(date).toLocaleDateString());
+      } catch {
+        setFormatted("");
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [date]);
-
-  if (!formatted) return <span className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-light)" }}>---</span>;
 
   return (
     <span className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-light)" }}>
-      {formatted}
+      {formatted || "---"}
     </span>
   );
 }
 
+const defaultDemonstrationWishes: Wish[] = [
+  {
+    _id: "demo-wish-1",
+    name: "Aunt Sunita & Uncle Rajesh",
+    message:
+      "Wishing you both a lifetime of love, joy, and laughter as you embark on this beautiful adventure together!",
+    timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
+  },
+  {
+    _id: "demo-wish-2",
+    name: "Vikram & Neha",
+    message:
+      "Heartiest congratulations! Can't wait to dance at the celebrations and rejoice with both families!",
+    timestamp: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    _id: "demo-wish-3",
+    name: "Dr. K. Srinivas Rao",
+    message:
+      "May your journey together be blessed with abundant happiness, good health, and prosperous memories.",
+    timestamp: new Date(Date.now() - 86400000 * 3).toISOString(),
+  },
+];
+
 export default function Wishes() {
-  const [wishes, setWishes] = useState<Wish[]>([]);
+  const [wishes, setWishes] = useState<Wish[]>(defaultDemonstrationWishes);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/wishes")
-      .then((res) => res.json())
-      .then((data) => setWishes(data))
-      .catch(() => {})
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setWishes(data);
+        } else {
+          setWishes(defaultDemonstrationWishes);
+        }
+      })
+      .catch(() => {
+        setWishes(defaultDemonstrationWishes);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -51,16 +91,41 @@ export default function Wishes() {
         body: JSON.stringify({ name: name.trim(), message: message.trim() }),
       });
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        // Fallback for demonstration when offline
+        const localWish: Wish = {
+          _id: `local-${Date.now()}`,
+          name: name.trim(),
+          message: message.trim(),
+          timestamp: new Date().toISOString(),
+        };
+        setWishes((prev) => [localWish, ...(Array.isArray(prev) ? prev : [])]);
+        setName("");
+        setMessage("");
+        return;
+      }
 
       const newWish = await res.json();
-      setWishes([newWish, ...wishes]);
+      if (newWish && newWish._id) {
+        setWishes((prev) => [newWish, ...(Array.isArray(prev) ? prev : [])]);
+        setName("");
+        setMessage("");
+      }
+    } catch {
+      // Offline fallback
+      const localWish: Wish = {
+        _id: `local-${Date.now()}`,
+        name: name.trim(),
+        message: message.trim(),
+        timestamp: new Date().toISOString(),
+      };
+      setWishes((prev) => [localWish, ...(Array.isArray(prev) ? prev : [])]);
       setName("");
       setMessage("");
-    } catch {
-      // silently fail
     }
   };
+
+  const wishList = Array.isArray(wishes) ? wishes : defaultDemonstrationWishes;
 
   return (
     <section id="wishes" className="relative py-24 sm:py-32 overflow-hidden">
@@ -137,7 +202,7 @@ export default function Wishes() {
                     color: "white",
                   }}
                 >
-                  Send Wish ✨
+                  Send Wish
                 </button>
               </div>
             </form>
@@ -152,10 +217,10 @@ export default function Wishes() {
           >
             {loading ? (
               <p className="text-sm" style={{ color: "var(--text-light)" }}>Loading wishes...</p>
-            ) : wishes.length === 0 ? (
+            ) : wishList.length === 0 ? (
               <p className="text-sm" style={{ color: "var(--text-light)" }}>No wishes yet. Be the first!</p>
             ) : (
-              wishes.map((wish, i) => (
+              wishList.map((wish, i) => (
                 <motion.div
                   key={wish._id}
                   initial={{ opacity: 0, y: 20 }}

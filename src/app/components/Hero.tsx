@@ -19,11 +19,19 @@ function Countdown({ targetDate }: { targetDate: Date }) {
         seconds: Math.floor((diff / 1000) % 60),
       };
     };
-    setTime(calc());
+
+    const timer = setTimeout(() => {
+      setTime(calc());
+    }, 0);
+
     const interval = setInterval(() => {
       setTime(calc());
     }, 1000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [targetDate]);
 
   if (!time) return null;

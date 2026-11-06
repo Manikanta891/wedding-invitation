@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 const images = [
@@ -49,11 +50,13 @@ export default function Gallery() {
               ${i === 6 ? "col-span-2" : ""}`}
               onClick={() => setSelected(image.id)}
             >
-                <div className="glossy-overlay">
-                  <img
+                <div className="glossy-overlay relative min-h-[200px] md:min-h-[250px] w-full h-full">
+                  <Image
                     src={image.src}
                     alt={image.alt}
-                    className="w-full h-full min-h-[200px] md:min-h-[250px] object-cover"
+                    fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    className="object-cover"
                     loading="lazy"
                   />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -90,13 +93,14 @@ export default function Gallery() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative max-w-2xl w-full rounded-2xl overflow-hidden glass-card"
+              className="relative max-w-2xl w-full h-[70vh] rounded-2xl overflow-hidden glass-card"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={images.find((img) => img.id === selected)?.src || ""}
-                alt={images.find((img) => img.id === selected)?.alt || ""}
-                className="w-full h-auto max-h-[80vh] object-contain"
+              <Image
+                src={images.find((img) => img.id === selected)?.src || "/photos/L-1.jpeg"}
+                alt={images.find((img) => img.id === selected)?.alt || "Wedding Photo"}
+                fill
+                className="object-contain"
               />
               <button
                 onClick={() => setSelected(null)}
